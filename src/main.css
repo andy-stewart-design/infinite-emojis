@@ -1,0 +1,21 @@
+* {
+  box-sizing: border-box;
+}
+
+/* html {
+  background: #1a1a1a;
+} */
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}
