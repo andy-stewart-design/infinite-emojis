@@ -1,3 +1,4 @@
+import { emojis } from "./emojis";
 import type { Box, Vec2, Vec3 } from "./types";
 
 type CanvasAnimationContext =
@@ -9,15 +10,15 @@ class CanvasAnimation {
   private camera: Vec3 = { x: 0, y: 0, z: 1 };
   private canvas: Box;
   private viewport: Box;
-  private grid = { rows: 6, cols: 6 };
+  private grid = { rows: 10, cols: 10 };
   private cell = { width: 0, height: 0 };
   private mouse: { previous: Vec2; current: Vec2 } | null = null;
+  private emojis: Array<string>;
 
   private pressStartPoint: Vec2 = { x: 0, y: 0 };
   private velocity: Vec2 = { x: 0, y: 0 };
   private activeCell = { index: 0, col: 0, row: 0 };
   private hoveredCell = { index: 0, col: 0, row: 0 };
-  private image: ImageBitmap | HTMLImageElement | null = null;
 
   private framerate = 0;
   private prevTime = 0;
@@ -35,6 +36,7 @@ class CanvasAnimation {
     this.ctx = ctx;
     this.isOffscreen = this.ctx instanceof OffscreenCanvasRenderingContext2D;
     this.resize(width, height);
+    this.emojis = emojis.slice(0, this.grid.cols * this.grid.rows);
   }
 
   private drawDebugPanel(timestamp: number) {
@@ -61,7 +63,7 @@ class CanvasAnimation {
 
       this.ctx.save();
       this.ctx.font = `300 ${fontSize}px system-ui`;
-      this.ctx.fillStyle = "rgb(0 0 0 / 0.75)";
+      this.ctx.fillStyle = "rgb(0 0 0 / 0.6)";
       this.ctx.strokeStyle = "rgb(255 255 255 / 0.15)";
       this.ctx.beginPath();
       this.ctx.roundRect(offset, offset, w + offset + fontSize * 1.25, 240, 8);
@@ -186,12 +188,12 @@ class CanvasAnimation {
       height: height,
     };
     const cellWidth = Math.max(
-      this.viewport.width / 3,
-      this.viewport.height / 3
+      this.viewport.width / 4,
+      this.viewport.height / 4
     );
     this.cell = {
       width: cellWidth,
-      height: (cellWidth / 3) * 4,
+      height: (cellWidth / 4) * 5,
     };
     this.canvas = {
       minX: 0,
@@ -210,7 +212,7 @@ class CanvasAnimation {
     this.ctx.save();
     this.ctx.translate(this.camera.x, this.camera.y);
 
-    for (let i = 0; i < this.grid.cols * this.grid.rows; i++) {
+    for (let i = 0; i < this.emojis.length; i++) {
       const rowIndex = i % this.grid.cols;
       const colIndex = Math.floor(i / this.grid.cols);
       const { width, height } = this.cell;
@@ -252,22 +254,24 @@ class CanvasAnimation {
       this.ctx.stroke();
       this.ctx.closePath();
 
+      this.ctx.font = `300 ${13}px system-ui`;
       this.ctx.textAlign = "center";
       this.ctx.fillStyle = "white";
       this.ctx.fillText(
         i.toString(),
+        rowIndex * width + shiftX + this.viewport.width / 55,
+        colIndex * height + shiftY + this.viewport.width / 50
+      );
+
+      this.ctx.font = `300 ${40}px system-ui`;
+      this.ctx.textAlign = "center";
+      this.ctx.fillStyle = "white";
+      this.ctx.fillText(
+        this.emojis[i],
         rowIndex * width + shiftX + this.cell.width / 2,
         colIndex * height + shiftY + this.cell.height / 2
       );
     }
-
-    // if (this.image) {
-    //   this.ctx.drawImage(
-    //     this.image,
-    //     this.cell.width / 2 - this.image.width / 2,
-    //     this.cell.height / 2 - this.image.height / 2
-    //   );
-    // }
 
     this.ctx.restore();
 
@@ -329,11 +333,6 @@ class CanvasAnimation {
 
   public onResize(width: number, height: number) {
     this.resize(width, height);
-  }
-
-  public onImageLoaded(bitmap: ImageBitmap | HTMLImageElement) {
-    this.image = bitmap;
-    console.log(this.image);
   }
 }
 

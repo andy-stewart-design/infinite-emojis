@@ -48,10 +48,6 @@ class OffscreenCanvasRenderer {
     this.animation?.onWheel(deltaX, deltaY);
   }
 
-  public onImageLoaded(bitmap: ImageBitmap | HTMLImageElement) {
-    this.animation?.onImageLoaded(bitmap);
-  }
-
   public resize(width: number, height: number) {
     if (!this.canvas || !this.ctx) return;
 
@@ -91,7 +87,5 @@ function handleOffscreenCanvasMessage({ data }: OffscreenCanvasMessageEvent) {
     renderer.onWheel(data.deltaX, data.deltaY);
   } else if (data.type === "resize") {
     renderer.resize(data.width, data.height);
-  } else if (data.type === "image") {
-    renderer.onImageLoaded(data.image);
   }
 }

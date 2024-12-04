@@ -100,21 +100,8 @@ class HTMLCanvasRenderer {
     const { x, y } = getPressPoint(e);
     if (this.isOffscreen) {
       sendToWorker({ type: "click", x, y });
-      const image = new Image();
-      image.crossOrigin = "anonymous";
-      image.src = "https://picsum.photos/200/300";
-      image.onload = async () => {
-        const bitmap = await createImageBitmap(image); // Resolve the promise
-        sendToWorker({ type: "image", image: bitmap });
-      };
     } else {
       this.animation?.onClick(x, y);
-      const image = new Image();
-      image.crossOrigin = "anonymous";
-      image.src = "https://picsum.photos/200/300";
-      image.onload = () => {
-        this.animation?.onImageLoaded(image);
-      };
     }
   }
 
