@@ -3,6 +3,8 @@ function getPressPoint(event: TouchEvent | MouseEvent) {
 
   if ("touches" in event) {
     const touch = event.touches[0];
+    if (!touch) return { x: 0, y: 0 };
+
     currentX = touch.clientX;
     currentY = touch.clientY;
   } else {

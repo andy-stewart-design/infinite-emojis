@@ -29,7 +29,7 @@ class CanvasAnimation {
   private debugConfig = {
     show: true,
     offset: 12,
-    fontSize: 16,
+    fontSize: 12,
   };
 
   constructor(ctx: CanvasAnimationContext, width: number, height: number) {
@@ -54,19 +54,18 @@ class CanvasAnimation {
         this.framerate = nextFramerate > 0 ? nextFramerate : 0;
       }
 
+      this.ctx.save();
+      this.ctx.font = `300 ${fontSize}px monospace`;
+      this.ctx.fillStyle = "rgb(0 0 0 / 0.6)";
+      this.ctx.strokeStyle = "rgb(255 255 255 / 0.15)";
       const vpText = `Viewport: ${this.viewport.minX.toFixed(
         1
       )}, ${this.viewport.minY.toFixed(1)}, ${this.viewport.maxX.toFixed(
         1
       )}, ${this.viewport.maxY.toFixed(1)}`;
       const { width: w } = this.ctx.measureText(vpText);
-
-      this.ctx.save();
-      this.ctx.font = `300 ${fontSize}px system-ui`;
-      this.ctx.fillStyle = "rgb(0 0 0 / 0.6)";
-      this.ctx.strokeStyle = "rgb(255 255 255 / 0.15)";
       this.ctx.beginPath();
-      this.ctx.roundRect(offset, offset, w + offset + fontSize * 1.25, 240, 8);
+      this.ctx.roundRect(offset, offset, w + offset + fontSize * 1.25, 180, 8);
       this.ctx.fill();
       this.ctx.stroke();
       this.ctx.closePath();
@@ -105,7 +104,11 @@ class CanvasAnimation {
         posX,
         posY(8.5)
       );
-      this.ctx.fillText(`Is pressed: ${this.isPressed}`, posX, posY(10));
+      this.ctx.fillText(
+        `Is pressed: ${this.isPressed}, ${this.pressStartPoint.x}, ${this.pressStartPoint.y}`,
+        posX,
+        posY(10)
+      );
       this.ctx.fillText(
         `Active Cell: ${this.activeCell.index}, ${this.activeCell.col}, ${this.activeCell.row}`,
         posX,
@@ -314,6 +317,10 @@ class CanvasAnimation {
       this.velocity = { x: 0, y: 0 };
       if (x !== undefined && y !== undefined) {
         this.pressStartPoint = { x, y };
+        this.mouse = {
+          previous: { x, y },
+          current: { x, y },
+        };
       }
     } else if (x !== undefined && y !== undefined) {
       if (Math.abs(this.pressStartPoint.x - x) < 10) {
